@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Balance</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+      animation: gradientShift 10s ease infinite;
+    }
+
+    body {
+      display: flex;
+      height: 100vh;
+      overflow: hidden;
+      transition: background 0.6s ease;
+      background: #ffff;
+      background-size: 200% 200%;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* SIDEBAR */
+     .sidebar {
+    width: 250px;
+    background: rgba(255, 255, 255, 0.7);
+    border-right: 1px solid #ddd;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 0;
+    transition: all 0.4s ease;
+    position: relative;
+  }
+
+  .sidebar.hide {
+    width: 110px;
+  }
+
+  .sidebar .toggle-btn {
+    position: absolute;
+    top: 20px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: #444;
+  }
+
+  .sidebar .menu {
+    margin-top: 3rem;
+    width: 100%;
+  }
+
+  .sidebar a {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+    padding: 10px 20px;
+    border-radius: 20px;
+    transition: all 0.3s ease;
+    margin: 10px 15px;
+  }
+
+  .sidebar a:hover,
+  .sidebar a.active {
+    background-color: #ffdada;
+  }
+
+  .sidebar a i {
+    font-size: 1.5rem;
+    min-width: 30px;
+    text-align: center;
+  }
+
+  /* Footer Login/Register Section */
+  .sidebar-footer {
+    margin-top: auto;
+    width: 100%;
+    padding: 1rem;
+    border-top: 1px solid #ddd;
+    text-align: center;
+  }
+
+  .sidebar-footer button {
+    width: 80%;
+    margin: 0.3rem auto;
+    display: block;
+    background: #a7eded;
+    border: none;
+    color: #000;
+    font-weight: 600;
+    border-radius: 10px;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .sidebar-footer button:hover {
+    background: #85d3d2;
+    transform: scale(1.05);
+  }
+
+  .sidebar-footer .user-info {
+    text-align: center;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebar-footer .logout-btn {
+    background: #fbcaca;
+  }
+
+  .sidebar-footer .logout-btn:hover {
+    background: #f79d9d;
+  }
+
+    .toggle-btn {
+      position: absolute;
+      top: 20px;
+      right: -20px;
+      width: 40px;
+      height: 40px;
+      background: #ff8e8e;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      transition: transform 0.3s ease;
+      z-index: 10;
+    }
+
+    .toggle-btn:hover {
+      transform: rotate(90deg);
+    }
+
+    /* MAIN CONTENT */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      padding: 30px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.6s ease;
+    }
+
+    .main.full {
+      width: calc(100% - 70px);
+    }
+
+    .head.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .head {
+      background-color: red;
+      position: absolute;
+      top: 0;
+      margin: 0 0 0 33%;
+      width: 100%;
+      height: 350px;
+      background-color: #ACC4FF;
+      z-index: 1;
+      transform: translateX(100%);
+      transition: all 0.7s ease;
+    }
+
+    .head h1 {
+      font-size: 1.9rem;
+      margin-top: 40px;
+      margin-left: -15%;
+      color: #ffff;
+    }
+
+    #head-home.active {
+      background-color: #ACC4FF; /* pink lembut */
+    }
+    #head-about.active {
+      background-color: #ACC4FF; /* biru */
+    }
+    #head-heart.active {
+      background-color: #ACC4FF; /* hijau turquoise */
+    }
+    #head-tips.active {
+      background-color: #ACC4FF; /* kuning-oranye */
+    }
+
+    .logo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 180px;
+      height: 120px;
+      background-color: #dae1fb; 
+      border-bottom-right-radius: 15px;
+      z-index: 2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+
+    .header {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-weight: 700;
+      font-size: 1.8rem;
+      color: #333;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 3px rgba(255,255,255,0.5);
+    }
+
+    .header img {
+      width: 120px;
+    }
+
+    /* HERO AREA */
+    .hero-container {
+      width: 80%;
+      max-width: 1000px;
+      height: 420px;
+      background: #ffff;
+      border-radius: 10px;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden;
+      position: relative;
+      z-index: 1;
+      margin-top: 85px;
+      filter: drop-shadow(0 0 6px #dae1fb);
+    }
+
+    .hero {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transform: translateX(100%);
+      transition: all 0.7s ease;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+
+    .hero.active {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .hero img {
+      width: 95%;
+      height: 90%;
+      object-fit: auto;
+      position: absolute;
+      z-index: 0;
+    }
+
+    .hero-content {
+      z-index: 2;
+      color: white;
+      text-align: center;
+      max-width: 600px;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    }
+
+    .hero p {
+      font-size: 1rem;
+      margin: 10px 0 20px;
+      text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+    }
+
+    .hero button {
+      background: #ff0000;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+
+    .hero button:hover {
+      background: #cc0000;
+    }
+
+    /* FOOTER */
+    footer {
+      margin-top: 20px;
+      font-weight: 600;
+      color: rgb(46 125 50 / 0.7);
+      position: relative;
+      margin-left: 55%;
+      font-weight: 1000;
+    }
+
+    .sidebar-history {
+  width: 90%;
+  margin: 10px auto;
+  padding: 10px;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.sidebar-history ul li {
+  padding: 5px 0;
+  border-bottom: 1px dotted #aaa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.sidebar-history ul li:hover {
+  background-color: #ffdada;
+  border-radius: 10px;
+}
+
+#history-list li {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 5px 10px;
+  border-bottom: 1px dotted #aaa;
+  cursor: pointer;
+}
+
+#history-list li button.delete-btn {
+  display: none;
+  background: transparent;
+  border: none;
+  color: #f44336;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+#history-list li:hover button.delete-btn {
+  display: inline-block;
+}
+
+
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        z-index: 1000;
+        height: 100%;
+      }
+
+      .main {
+        padding: 80px 20px;
+      }
+
+      .hero-container {
+        width: 95%;
+        height: 300px;
+      }
+    }
+
+
+    .form-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  margin-bottom: -370px;
+}
+
+.tips-gallery {
+  width: 90%;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 18px;
+
+  /* --- AGAR BISA SCROLL --- */
+  max-height: 350px;      /* tinggi area gallery */
+  overflow-y: auto;       /* aktifkan scroll */
+  padding-right: 8px;
+  margin-bottom: 40px;    /* beri jarak supaya footer tidak nempel */
+}
+
+.tips-gallery img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 14px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+<div class="sidebar" id="sidebar">
+  <!-- Tombol Toggle -->
+  <div class="toggle-btn" id="toggle-btn">
+    <i class="ri-menu-line"></i>
+  </div>
+
+  <!-- Menu Utama -->
+  <div class="menu">
+    <a href="#" class="active" data-page="home"><i class="ri-home-line"></i><span>Home</span></a>
+    <a href="#" data-page="about"><i class="ri-information-line"></i><span>About Us</span></a>
+    <a href="#" data-page="heart"><i class="ri-heart-pulse-line"></i><span>My Heart Check</span></a>
+    <a href="#" data-page="tips"><i class="ri-lightbulb-line"></i><span>Tips & Tricks</span></a>
+  </div>
+
+  <div class="sidebar-history" id="sidebar-history">
+    <h4 style="text-align:center; margin-bottom:10px;">Histori Prediksi</h4>
+    <ul id="history-list" style="list-style:none; padding:0; max-height:200px; overflow-y:auto;">
+      <!-- Data prediksi akan diisi JS -->
+    </ul>
+  </div>
+
+  <!-- Footer Login -->
+  <div class="sidebar-footer" id="sidebar-footer">
+    <!-- akan berubah otomatis via JS -->
+  </div>
+
+</div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+<div class="head active" id="head-home">
+  <div class="header">
+    <div class="logo">
+      <img src="assets/logo_balance.png" alt="logo">
+    </div>
+    <h1>Mengidentifikasi Penyakit Jantung</h1>
+  </div>
+</div>
+
+<div class="head" id="head-about">
+  <div class="header">
+    <div class="logo" style="background-color:#cfe3ff;">
+      <img src="assets/logo_balance.png" alt="logo">
+    </div>
+    <h1>Tentang Heart Balance</h1>
+  </div>
+</div>
+
+<div class="head" id="head-heart">
+  <div class="header">
+    <div class="logo" style="background-color:#dae1fb;">
+      <img src="assets/logo_balance.png" alt="logo">
+    </div>
+    <h1>Periksa Kesehatan Jantungmu</h1>
+  </div>
+</div>
+
+<div class="head" id="head-tips">
+  <div class="header">
+    <div class="logo" style="background-color:#dae1fb;">
+      <img src="assets/logo_balance.png" alt="logo">
+    </div>
+    <h1>Tips & Trik Menjaga Jantung Sehat</h1>
+  </div>
+</div>
+
+    <div class="hero-container">
+      <!-- HOME -->
+      <div class="hero active" id="home">
+        <img src="assets/banner_utama.jpg" alt="heart">
+        <div class="hero-content">
+        </div>
+      </div>
+
+      <!-- ABOUT -->
+      <div class="hero" id="about">
+        <img src="assets/banner_kedua.jpg" alt="lab">
+        <div class="hero-content">
+          <a href="about.html">
+            <button style="margin-left: -600%; margin-top: 270%;">About Us</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- HEART -->
+      <div class="hero" id="heart">
+        <img src="assets/banner_ketiga.jpg" alt="lab">
+        <div class="hero-content">
+          <a href="heart_check.html">
+            <button style="margin-left: 110%; margin-top: 180%;">Check</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- TIPS -->
+      <div class="hero" id="tips">
+        <img src="assets/banner_keempat.jpg" alt="lab">
+        <div class="hero-content">
+          <a href="tips.html">
+            <button style="margin-left: 30%; margin-top: 350%;">Lihat</button>
+          </a>
+        </div>
+      </div>
+    </div>
+    
+    <footer>2025 research grants announced.</footer>
+    
+
+  </div>
+
+<script>
+  const sidebar = document.getElementById('sidebar');
+  const toggleBtn = document.getElementById('toggle-btn');
+  const main = document.getElementById('main');
+  const links = document.querySelectorAll('.sidebar a');
+  const heroes = document.querySelectorAll('.hero');
+  const heads = document.querySelectorAll('.head');
+  const body = document.body;
+  const sidebarFooter = document.getElementById('sidebar-footer');
+  const API_URL = "http://localhost:5000";
+
+  async function checkUser() {
+    const token = localStorage.getItem("token");
+    const sidebarHistory = document.getElementById("sidebar-history");
+    if (!token) {
+      sidebarFooter.innerHTML = `
+        <a href="login.html" class="footer-btn">Login</a>
+        <a href="register.html" class="footer-btn">Register</a>
+      `;
+      sidebarHistory.style.display = "none";
+      return;
+    }
+
+    const res = await fetch(`${API_URL}/user/getme`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const data = await res.json();
+    if (data.username) {
+      sidebarFooter.innerHTML = `
+        <div class="user-info">👋 Halo, ${data.username}</div>
+        <button onclick="logout()" class="logout-btn">Logout</button>
+      `;
+    } else {
+      sidebarFooter.innerHTML = `
+        <a href="login.html" class="footer-btn">Login</a>
+        <a href="register.html" class="footer-btn">Register</a>
+      `;
+    }
+  }
+
+  function logout() {
+    localStorage.removeItem("token");
+    alert("Berhasil logout!");
+    checkUser();
+  }
+
+  checkUser();
+
+  // ===================== 🩷 FUNGSI WARNA TEMA =====================
+  function updateSidebarTheme(color) {
+    const style = document.createElement('style');
+    style.id = 'dynamicSidebarStyle';
+    style.innerHTML = `
+      .sidebar a:hover,
+      .sidebar a.active {
+        background-color: ${color};
+      }
+      .toggle-btn { background: ${color}; }
+    `;
+    const old = document.getElementById('dynamicSidebarStyle');
+    if (old) old.remove();
+    document.head.appendChild(style);
+  }
+
+  // Tema awal
+  updateSidebarTheme('#dae1fb');
+
+  toggleBtn.addEventListener('click', () => {
+    sidebar.classList.toggle('hide');
+    main?.classList.toggle('full');
+  });
+
+  // ===================== 🌈 NAVIGASI HALAMAN =====================
+  links.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+
+    links.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+
+    const target = link.dataset.page;
+
+    // Show/Hide Hero
+    heroes.forEach(hero => {
+      hero.classList.remove('active');
+      if (hero.id === target) hero.classList.add('active');
+    });
+
+    // Show/Hide Head Banner
+    heads.forEach(h => h.classList.remove('active'));
+    const activeHead = document.getElementById(`head-${target}`);
+    if (activeHead) setTimeout(() => activeHead.classList.add('active'), 50);
+
+    // 🌟 Show/Hide Tips Gallery
+    const gallery = document.getElementById('tips-gallery');
+    if (target === "tips") {
+      gallery.style.display = "grid";
+    } else {
+      gallery.style.display = "none";
+    }
+
+    // Update Warna Tema
+    const gradients = {
+      home: '#dae1fb',
+      about: '#dae1fb',
+      heart: '#dae1fb',
+      tips: '#dae1fb'
+    };
+
+    body.style.background = "#fffff";
+    updateSidebarTheme(gradients[target] || '#dae1fb');
+  });
+});
+
+
+async function loadPredictionHistory() {
+  const token = localStorage.getItem("token");
+  if (!token) return;
+
+  try {
+    const res = await fetch(`${API_URL}/history/predictions`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
+
+    const historyList = document.getElementById('history-list');
+    historyList.innerHTML = "";
+
+    if (data.length === 0) {
+      historyList.innerHTML = `<li>Belum ada histori</li>`;
+      return;
+    }
+
+data.forEach(pred => {
+  const li = document.createElement('li');
+
+  const span = document.createElement('span');
+  span.textContent = `${new Date(pred.created_at).toLocaleDateString()} - ${pred.message}`;
+  span.title = `Confidence: ${pred.confidence}%\nPesan: ${pred.message}`;
+  span.addEventListener('click', () => {
+    alert(`Keyakinan: ${pred.confidence}%\nPesan: ${pred.message}`);
+  });
+
+  const delBtn = document.createElement('button');
+  delBtn.className = "delete-btn";
+  delBtn.innerHTML = `<i class="ri-delete-bin-line"></i>`;
+  delBtn.addEventListener('click', async (e) => {
+    e.stopPropagation(); // supaya tidak memicu alert span
+    if (!confirm("Yakin ingin menghapus prediksi ini?")) return;
+
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(`${API_URL}/history/predictions/${pred.id}`, {
+        method: "DELETE",
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        li.remove();
+        alert("Prediksi berhasil dihapus");
+      } else {
+        alert("Gagal menghapus prediksi");
+      }
+    } catch (error) {
+      console.error(error);
+      alert("Terjadi kesalahan");
+    }
+  });
+
+  li.appendChild(span);
+  li.appendChild(delBtn);
+  historyList.appendChild(li);
+});
+
+
+
+
+  } catch (error) {
+    console.error("Gagal memuat histori:", error);
+  }
+}
+
+checkUser().then(loadPredictionHistory);
+
+</script>
+
+
+
+</body>
+</html>

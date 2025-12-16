@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pastel Login</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Poppins', sans-serif;
+    }
+          /* HEADER */
+      .custom-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 18px 30px;
+      gap: 20px;
+      background: #fff;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+
+    .header-icon {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 6px 18px rgba(76, 141, 241, .4);
+    }
+
+    .heart-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      transform: translate(-50%, -50%);
+    }
+
+    .header-text h1 {
+      font-size: 22px;
+      margin: 0;
+      font-weight: 700;
+      color: #123066;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 15px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 16px;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 6px 14px rgba(0,0,0,.08);
+      cursor: pointer;
+      transition: .25s;
+      font-weight: 600;
+      color: #123066;
+      animation: slideLeft .6s ease;
+    }
+
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    
+    .back-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    }
+
+    /* CONTAINER */
+    .container {
+      animation: fade .6s ease;
+    }
+
+    @keyframes fade {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <header class="custom-header">
+    <button class="back-btn" onclick="window.location.href='index.html'">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+      stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+  
+    <div class="header-icon">
+      <div class="circle"></div>
+      <img src="assets/logo_balance.png" alt="Heart Icon" class="heart-icon">
+    </div>
+    <div class="header-text">
+      <h1>Login</h1>
+      <p>Silahkan masuk menggunakan akun anda</p>
+    </div>
+  </header>
+  <div class="container flex flex-col items-center justify-center min-h-screen">
+    <!-- Card -->
+    <div class="relative bg-[#F7F8FC] shadow-md rounded-2xl w-[380px] p-8 text-center hover:shadow-[0_0_25px_#BFCBFF]">
+    
+    <!-- Profile Icon di atas card -->
+    <div class="absolute -top-14 left-1/2 transform -translate-x-1/2">
+      <div class="w-24 h-24 bg-[#BFCBFF] rounded-full flex items-center justify-center shadow-md">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#ffffff" stroke-width="1.5" class="w-10 h-10">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M16 14a4 4 0 10-8 0m8 0a4 4 0 11-8 0m8 0v6m-8-6v6m8 0H8"/>
+        </svg>
+      </div>
+    </div>
+<form id="loginForm">
+  <div class="mt-12">
+      <!-- Username -->
+      <div class="flex items-center border border-[#BFCBFF] bg-white rounded-md overflow-hidden mb-4">
+        <div class="bg-[#BFCBFF] p-3 flex justify-center items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#ffffff" stroke-width="1.5" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5.121 17.804A13.937 13.937 0 0112 15c2.62 0 5.053.755 7.121 2.05M15 10a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+        </div>
+        <input type="text" placeholder="Username" id="username" class="w-full px-3 py-2 text-[#6D6E91] focus:outline-none placeholder-[#BFCBFF]">
+      </div>
+      
+      <!-- Password -->
+      <div class="flex items-center border border-[#BFCBFF] bg-white rounded-md overflow-hidden mb-3">
+        <div class="bg-[#BFCBFF] p-3 flex justify-center items-center">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#ffffff" stroke-width="1.5" class="w-5 h-5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7a4 4 0 10-8 0v2H6a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+        </div>
+        <input type="password" placeholder="Password" id="password" class="w-full px-3 py-2 text-[#6D6E91] focus:outline-none placeholder-[#BFCBFF]">
+      </div>
+
+      <!-- Forgot Password -->
+      <div class="text-right text-sm">
+        <a href="#" class="text-[#2E265E] hover:underline">Lupa Password?</a>
+      </div>
+    </div>
+  </div>
+</form>
+
+<!-- Tombol Login di luar card -->
+  <button id="loginBtn" class="mt-6 bg-[#F7F8FC] shadow-lg px-20 py-3 rounded-xl text-[#2E265E] font-semibold text-lg hover:bg-[#BFCBFF] hover:text-white transition-all duration-300 hover:shadow-[0_0_25px_#BFCBFF]">
+    Login
+  </button>
+  
+  <!-- Tulisan Register -->
+  <p class="mt-4 text-sm text-[#6D6E91]">
+    Belum punya akun?
+    <a href="register.html" class="text-[#2E265E] font-semibold hover:underline hover:text-[#BFCBFF] transition-all">Register</a>
+  </p>
+</div>
+  
+  <script>
+    const loginBtn = document.getElementById('loginBtn');
+
+loginBtn.addEventListener('click', async (e) => {
+  e.preventDefault();
+
+  const username = document.getElementById('username').value.trim();
+  const password = document.getElementById('password').value.trim();
+  
+  if (!username || !password) {
+    alert("Harap isi semua kolom!");
+    return;
+  }
+  
+  try {
+    const res = await fetch('http://localhost:5000/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.message || "Login gagal!");
+      return;
+    }
+
+    // simpan token + user
+    localStorage.setItem('token', data.token);
+    localStorage.setItem('user', JSON.stringify(data.user));
+
+    // Arahkan berdasarkan role
+    if (data.user.role === "admin") {
+      window.location.href = "admin/dashboard.html";
+    } else {
+      window.location.href = "index.html";
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert("Terjadi kesalahan koneksi ke server!");
+  }
+});
+
+</script>
+
+</body>
+</html>

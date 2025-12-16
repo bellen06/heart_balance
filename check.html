@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cek Risiko Jantung</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://cdn.jsdelivr.net/npm/remixicon@4.3.0/fonts/remixicon.css" rel="stylesheet">
+<style>
+body { background-color: #F0F4FF; font-family: 'Poppins', sans-serif; }
+.card { background-color: #fff; box-shadow: 0 8px 20px rgba(0,0,0,0.08); border-radius: 1.25rem; padding: 2.5rem 2rem; max-width: 700px; width: 100%; margin: 2rem auto; }
+.input-label { color:#2E265E; font-weight:500; display:block; margin-bottom:.25rem; font-size:.95rem; }
+.input-field { border:1px solid #BFCBFF; border-radius:.75rem; padding:.6rem 1rem; width:100%; margin-bottom:1rem; transition:border-color .3s,box-shadow .3s; }
+.input-field:focus { outline:none; border-color:#2E265E; box-shadow:0 0 5px rgba(46,38,94,0.3); }
+.submit-btn, .example-btn { background-color:#2E265E; color:#fff; padding:.75rem; width:100%; border-radius:1rem; font-weight:600; font-size:1rem; transition:all .3s; margin-top:.5rem; }
+.submit-btn:hover, .example-btn:hover { background-color:#4B47A1; transform:translateY(-2px); box-shadow:0 5px 15px rgba(46,38,94,0.2); }
+#adviceMsg {
+  display: none;
+  margin-top: 20px;
+  padding: 20px;
+  border-radius: 15px;
+  font-size: 16px;
+  line-height: 1.6;
+  font-weight: 500;
+  animation: fadeIn 0.7s ease;
+  border-left: 6px solid #3b82f6;
+  background: linear-gradient(135deg, #e8f2ff 0%, #ffffff 100%);
+  box-shadow: 0 5px 18px rgba(0,0,0,0.08);
+  position: relative;
+}
+
+body{
+      margin:0; 
+      font-family:'Poppins',sans-serif; 
+      background:#eef3ff;
+      overflow-x:hidden;
+    }
+
+
+#adviceMsg::before {
+  content: "💖";
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  font-size: 38px;
+}
+
+#adviceMsg h3 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #1d4ed8;
+  font-weight: 700;
+}
+
+#adviceMsg p {
+  margin: 0;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+          /* HEADER */
+          .custom-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 18px 30px;
+      gap: 20px;
+      background: #fff;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+
+    .header-icon {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 6px 18px rgba(76, 141, 241, .4);
+    }
+
+    .heart-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      transform: translate(-50%, -50%);
+    }
+
+    .header-text h1 {
+      font-size: 22px;
+      margin: 0;
+      font-weight: 700;
+      color: #123066;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 15px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 16px;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 6px 14px rgba(0,0,0,.08);
+      cursor: pointer;
+      transition: .25s;
+      font-weight: 600;
+      color: #123066;
+      animation: slideLeft .6s ease;
+    }
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+    .back-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    }
+</style>
+</head>
+<body>
+  <!-- Header Logo -->
+  <header class="custom-header">
+    <button class="back-btn" onclick="history.back()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+      stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+  
+    <div class="header-icon">
+      <div class="circle"></div>
+      <img src="assets/logo_balance.png" alt="Heart Icon" class="heart-icon">
+    </div>
+    <div class="header-text">
+      <h1>Tips & Trik</h1>
+      <p>Memulai Jantung Sehat</p>
+    </div>
+  </header>
+
+<div class="card">
+  <h2 class="text-center text-3xl font-bold text-[#2E265E] mb-2">Cek Risiko Penyakit Jantung</h2>
+  <p class="text-center text-sm text-[#6D6E91] mb-6">Jawab pertanyaan berikut sesuai kondisi Anda.</p>
+  
+  <form id="checkForm" class="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-4">
+    <!-- Usia -->
+    <div>
+      <label class="input-label" for="age">Berapa usia Anda? *</label>
+      <input type="number" id="age" class="input-field" min="1" max="120" placeholder="Contoh: 45">
+    </div>
+
+    <!-- Jenis Kelamin -->
+    <div>
+      <label class="input-label" for="sex">Jenis kelamin Anda? *</label>
+      <select id="sex" class="input-field">
+        <option value="">Pilih</option>
+        <option value="1">Laki-laki</option>
+        <option value="0">Perempuan</option>
+      </select>
+    </div>
+
+    <!-- Nyeri Dada / cp -->
+    <div>
+      <label class="input-label" for="cp">Keluhan dada yang Anda rasakan? *</label>
+      <select id="cp" class="input-field">
+        <option value="">Pilih</option>
+        <option value="0">Tidak ada nyeri dada</option>
+        <option value="1">Nyeri saat aktivitas</option>
+        <option value="2">Nyeri saat istirahat</option>
+        <option value="3">Nyeri parah mendadak</option>
+      </select>
+    </div>
+
+    <!-- Tekanan Darah -->
+    <div>
+      <label class="input-label" for="trestbps">Tekanan darah terakhir Anda? *</label>
+      <select id="trestbps" class="input-field">
+        <option value="">Pilih</option>
+        <option value="105">&lt; 110 mmHg</option>
+        <option value="120">110–130 mmHg</option>
+        <option value="140">131–150 mmHg</option>
+        <option value="160">151–170 mmHg</option>
+        <option value="180">&gt; 170 mmHg</option>
+      </select>
+    </div>
+
+    <!-- Kolesterol -->
+    <div>
+      <label class="input-label" for="chol">Kadar kolesterol total Anda? *</label>
+      <select id="chol" class="input-field">
+        <option value="">Pilih</option>
+        <option value="170">&lt; 180 mg/dL</option>
+        <option value="200">180–220 mg/dL</option>
+        <option value="240">221–260 mg/dL</option>
+        <option value="280">&gt; 260 mg/dL</option>
+      </select>
+    </div>
+
+    <!-- Mudah Lelah -->
+    <div>
+      <label class="input-label" for="thalach">Apakah Anda mudah lelah saat aktivitas? *</label>
+      <select id="thalach" class="input-field">
+        <option value="">Pilih</option>
+        <option value="170">Tidak mudah lelah</option>
+        <option value="140">Mudah lelah</option>
+        <option value="120">Sangat mudah lelah</option>
+      </select>
+    </div>
+
+    <!-- Nyeri saat olahraga -->
+    <div>
+      <label class="input-label" for="exang">Nyeri dada saat berolahraga? *</label>
+      <select id="exang" class="input-field">
+        <option value="">Pilih</option>
+        <option value="1">Ya</option>
+        <option value="0">Tidak</option>
+      </select>
+    </div>
+
+    <!-- Oldpeak -->
+    <div>
+      <label class="input-label" for="oldpeak">Sesak setelah aktivitas? *</label>
+      <select id="oldpeak" class="input-field">
+        <option value="">Pilih</option>
+        <option value="0">Tidak pernah</option>
+        <option value="1">Jarang</option>
+        <option value="2">Kadang</option>
+        <option value="3">Sering</option>
+      </select>
+    </div>
+
+    <!-- Apakah Merokok -->
+    <div>
+      <label class="input-label" for="perokok">Apakah Anda merokok? *</label>
+      <select id="perokok" class="input-field">
+        <option value="">Pilih</option>
+        <option value="1">Ya</option>
+        <option value="0">Tidak</option>
+      </select>
+    </div>
+
+    <!-- Batang per hari -->
+    <div>
+      <label class="input-label" for="batang_per_hari">Berapa batang rokok per hari? *</label>
+      <input 
+        type="number" 
+        id="batang_per_hari" 
+        class="input-field" 
+        placeholder="Masukkan jumlah batang per hari"
+        min="0" 
+        step="1"
+        required
+      />
+    </div>    
+
+    <div class="md:col-span-2 mt-2">
+      <button type="submit" class="submit-btn">Cek Risiko</button>
+      <button type="button" class="example-btn" id="highRiskBtn">Isi Contoh Risiko Tinggi</button>
+    </div>
+  </form>
+  <p id="resultMsg" class="mt-4 text-center font-semibold text-[#2E265E]"></p>
+  <div class="card mt-6" id="chartCard" style="display:none;">
+    <h3 class="text-center text-xl font-semibold text-[#2E265E] mb-4">Analisis Penyebab Risiko</h3>
+    <canvas id="riskChart"></canvas>
+  </div>
+  <div id="adviceMsg" style="margin-top:15px; font-size:15px; display:none; background:#eef7ff; padding:10px; border-radius:8px;"></div>
+  <div id="notLoginInfo"></div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  let chartInstance;
+    // Tombol contoh risiko tinggi
+    document.getElementById("highRiskBtn").addEventListener("click", () => {
+      const example = {
+        age: 70, sex: 1, cp: 3, trestbps: 180, chol: 280,
+        thalach: 120, exang: 1, oldpeak: 3,
+        perokok: 1, batang_per_hari: 20
+      };
+    Object.keys(example).forEach(f => {
+      document.getElementById(f).value = example[f];
+    });
+  });
+  const form = document.getElementById("checkForm");
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const fields = [
+      "age","sex","cp","trestbps","chol",
+      "thalach","exang","oldpeak",
+      "perokok","batang_per_hari"
+    ];
+    const data = {};
+    let empty = false;
+  
+    fields.forEach(f => {
+      const v = Number(document.getElementById(f).value);
+      if(isNaN(v)) empty = true;
+      data[f] = v;
+    });
+  
+    if(empty){ alert("Semua pertanyaan wajib dijawab."); return; }
+  
+    const token = localStorage.getItem("token");
+    const headers = { "Content-Type": "application/json" };
+    if(token) headers["Authorization"] = `Bearer ${token}`;
+
+    if (!token) {
+    document.getElementById("notLoginInfo").innerHTML = `
+      <div style="
+        margin-top:15px;
+        padding:15px;
+        border-radius:12px;
+        background:linear-gradient(135deg, #fff6d2, #ffe9a8);
+        color:#6c4c00;
+        font-size:15px;
+        font-weight:600;
+        text-align:center;
+        box-shadow:0 4px 15px rgba(0,0,0,0.12);
+      ">
+        🔐 Anda belum login.<br>
+        Riwayat prediksi <b>tidak akan disimpan</b>. <br>
+        <a href="login.html" style="
+          margin-top:6px;
+          display:inline-block;
+          padding:6px 12px;
+          background:#f4b400;
+          color:white;
+          border-radius:8px;
+          text-decoration:none;
+          font-size:14px;
+          font-weight:700;">
+          Login Sekarang
+        </a>
+      </div>
+    `;
+  } else {
+    document.getElementById("notLoginInfo").innerHTML = "";
+  }
+
+    const send = await fetch("http://localhost:5000/ml/predict", {
+      method:"POST",
+      headers,
+      body: JSON.stringify(data)
+    });
+
+  
+    const res = await send.json();
+    document.getElementById("resultMsg").textContent = res.message;
+  
+// === Tampilkan Chart Faktor Risiko ===
+if(res.factors){
+  document.getElementById("chartCard").style.display = "block";
+  const labels = Object.keys(res.factors);
+  const values = Object.values(res.factors);
+
+  const ctx = document.getElementById("riskChart").getContext("2d");
+
+  if(chartInstance) chartInstance.destroy();
+
+  chartInstance = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: labels,
+      datasets: [{
+        label: "Kontribusi Faktor",
+        data: values,
+        borderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      indexAxis: "y", // Horizontal bar
+      plugins: {
+        legend: { display: false },
+        title: {
+          display: true,
+          text: "Kontribusi Faktor Risiko Penyakit Jantung"
+        }
+      },
+      scales: {
+        x: { beginAtZero: true }
+      }
+    }
+  });
+
+  // === Wejangan Motivatif Berdasarkan Prediksi ===
+  const adviceEl = document.getElementById("adviceMsg");
+adviceEl.style.display = "block";
+
+if(res.result === 1){
+  adviceEl.innerHTML = `
+    <h3>✨ Tingkatkan Kualitas Hidup Anda!</h3>
+    <p>
+      Hasil menunjukkan bahwa Anda berada pada kategori <b>Risiko Tinggi</b> ⚠️.<br>
+      Anda tidak sendirian dan kabar baiknya, perubahan kecil hari ini
+      bisa membawa dampak besar untuk masa depan Anda.
+      <br><br>
+      💪 <b>Mulai langkah baru:</b><br>
+      • Kurangi makanan berlemak dan perbanyak buah & sayur<br>
+      • Lakukan aktivitas fisik ringan setiap hari<br>
+      • Cukup tidur dan kelola stres dengan baik<br>
+      • Konsultasikan kondisi Anda ke tenaga medis profesional
+      <br><br>
+      <i>“Tidak ada kata terlambat untuk memperbaiki kesehatan. Masa depan yang lebih baik dimulai dari keputusan hari ini.”</i>
+    </p>
+  `;
+} else {
+  adviceEl.innerHTML = `
+    <h3>Selamat! Anda dalam Kondisi Baik</h3>
+    <p>
+      Berdasarkan perhitungan model, risiko Anda <b>Rendah</b> 🎉.<br>
+      Tetap pertahankan gaya hidup sehat — jangan lengah, tetap disiplin dan rutin memeriksa kondisi tubuh.
+      <br><br>
+      💡 <b>Saran untuk mempertahankan kesehatan:</b><br>
+      • Olahraga teratur untuk menjaga jantung tetap kuat<br>
+      • Pilih makanan seimbang & kurangi gula berlebih<br>
+      • Hindari stres, lakukan aktivitas positif
+      <br><br>
+      <i>“Kesehatan yang baik bukan keajaiban — itu hasil dari kebiasaan baik yang Anda lakukan setiap hari.”</i>
+    </p>
+  `;
+}
+
+}
+
+  });
+
+  const perokok = document.getElementById("perokok");
+  const batang = document.getElementById("batang_per_hari");
+
+  // Default: disabled & value 0
+  batang.value = 0;
+  batang.disabled = true;
+
+  perokok.addEventListener("change", function () {
+    if (this.value === "1") {
+      // Jika memilih "Ya"
+      batang.disabled = false;
+      batang.value = ""; // kosongkan agar user bisa input
+    } else {
+      // Jika memilih "Tidak" atau belum memilih
+      batang.disabled = true;
+      batang.value = 0;
+    }
+  });
+  </script>
+  
+
+</body>
+</html>

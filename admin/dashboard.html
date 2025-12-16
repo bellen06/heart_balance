@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Heart Balance — Admin Panel</title>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon/fonts/remixicon.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif}
+    body{display:flex;height:100vh;background:#ffffff;overflow:hidden}
+
+    /* SIDEBAR */
+    .sidebar{width:250px;background:rgba(255,255,255,0.7);backdrop-filter:blur(8px);border-right:1px solid #ddd;display:flex;flex-direction:column;padding:2rem 0;transition:.3s}
+    .sidebar.hide{width:100px}
+    .toggle-btn{position:absolute;top:20px;right:-20px;background:#ff8e8e;border-radius:50%;width:40px;height:40px;display:flex;justify-content:center;align-items:center;cursor:pointer;box-shadow:0 4px 10px rgba(0,0,0,.2)}
+    .menu{ margin-top:3rem;width:100% }
+    .sidebar a{display:flex;align-items:center;gap:10px;padding:10px 25px;text-decoration:none;color:#333;border-radius:20px;margin:10px 15px;font-weight:600;transition:.3s}
+    .sidebar a:hover,.sidebar a.active{ background:#ffdada }
+    .sidebar a i{font-size:1.5rem;min-width:30px;text-align:center}
+
+    /* MAIN */
+    .main{flex:1;padding:30px;position:relative;overflow-y:auto}
+    .header-box{width:100%;height:150px;background:#ACC4FF;border-radius:15px;box-shadow:0 4px 10px rgba(0,0,0,0.1);display:flex;align-items:center;justify-content:center;transition:.4s}
+    .header-box h1{color:white;font-size:2rem;font-weight:700}
+
+    /* PAGES */
+    .page{position:absolute;inset:0;padding:180px 20px 40px;opacity:0;transform:translateX(120%);transition:.5s}
+    .page.active{opacity:1;transform:translateX(0)}
+    .card{background:white;padding:20px;border-radius:15px;box-shadow:0 3px 10px rgba(0,0,0,0.1);margin-bottom:20px}
+    .card h2{font-size:1.3rem;margin-bottom:15px;color:#333}
+
+    .dashboard-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .chart-container{width:100%;height:220px}
+    .chart-container canvas{height:100% !important}
+
+    /* TABLE */
+    table{width:100%;border-collapse:collapse;font-family:"Poppins",sans-serif;margin-top:20px;overflow:hidden;border-radius:12px;box-shadow:0 4px 25px rgba(0,0,0,0.1);animation:fadeIn .8s}
+    table thead{background:#ACC4FF;color:#fff}
+    table thead th{padding:14px;font-size:15px;text-transform:uppercase;letter-spacing:1px}
+    table tbody tr{background:#ffffff;transition:.3s ease;cursor:pointer}
+    table tbody tr:nth-child(even){background:#f7f7fd}
+    table tbody tr:hover{background:#f0eaff;transform:scale(1.01);box-shadow:0px 3px 12px rgba(93,84,164,0.3)}
+    table td{padding:14px;font-size:14px;border-bottom:1px solid #ddd;animation:slideUp .6s}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes slideUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+
+    .action-btn{padding:8px 14px;border-radius:8px;border:none;cursor:pointer;font-size:13px;font-weight:600;transition:.3s}
+    .btn-edit{background:#4b71ff;color:white}
+    .btn-edit:hover{background:#3658d4;transform:translateY(-2px)}
+    .btn-delete{background:#ff4b4b;color:white}
+    .btn-delete:hover{background:#d43636;transform:translateY(-2px)}
+
+    .conf-badge{padding:6px 12px;border-radius:20px;font-weight:bold;color:#fff;display:inline-block;animation:fadeIn .4s}
+    .conf-high{background:#00c853}.conf-medium{background:#ffca28;color:#333}.conf-low{background:#ff5252}
+
+    .user-box{margin-top:auto;padding:15px;text-align:center;border-top:1px solid #ddd}
+    .user-box .username{font-weight:700;color:#333;display:block;margin-bottom:10px}
+    .logout-btn{background:#ff6b6b;border:none;padding:8px 14px;color:white;border-radius:8px;cursor:pointer;font-weight:600;transition:.3s}
+    .logout-btn:hover{background:#ff4b4b}
+
+    /* SETTINGS */
+    #page-settings .form-group{margin-bottom:15px}
+    #page-settings input,#page-settings select{width:100%;padding:8px;border-radius:6px;border:1px solid #ccc}
+    #page-settings button{padding:10px 15px;background:#4e73df;color:white;border:none;border-radius:6px;cursor:pointer}
+
+    /* CMS specific */
+    .cms-toolbar{display:flex;gap:10px;align-items:center;margin-bottom:12px}
+    .btn-primary{background:#4b71ff;color:#fff;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .btn-secondary{background:#eee;padding:8px 12px;border-radius:8px;border:none;cursor:pointer}
+    .hidden{display:none}
+
+    .editor-row{display:grid;grid-template-columns:2fr 1fr;gap:16px}
+    .editor-row .editor{min-height:320px}
+    .image-thumb{max-width:100%;border-radius:8px;margin-top:8px}
+
+    @media (max-width:900px){.editor-row{grid-template-columns:1fr}}
+
+    .image-upload-box {
+  width: 100%;
+  background: #fafafa;
+  border: 2px dashed #ccc;
+  padding: 16px;
+  border-radius: 14px;
+  text-align: center;
+  transition: 0.2s;
+  cursor: pointer;
+}
+
+.image-upload-box.dragover {
+  background: #eef8ff;
+  border-color: #3b82f6;
+}
+
+.image-placeholder {
+  color: #999;
+  padding: 20px 0;
+  font-size: 14px;
+}
+
+.image-preview {
+  width: 100%;
+  border-radius: 12px;
+  display: block;
+  margin-top: 6px;
+  object-fit: cover;
+  max-height: 260px;
+  transition: opacity .3s ease-in-out;
+}
+
+.image-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.btn-danger {
+  background: #e74c3c;
+  color: #fff;
+  padding: 6px 10px;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: #c0392b;
+}
+
+#toolbar button {
+  padding:6px 12px;
+  margin-right:4px;
+  border:1px solid #ccc;
+  border-radius:6px;
+  background:#f8f8f8;
+  cursor:pointer;
+}
+#toolbar button:hover {
+  background:#eaeaea;
+}
+
+.editor-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  background: #f5f7fb;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  padding: 8px;
+  margin-bottom: 10px;
+}
+
+.editor-toolbar button {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  transition: .2s;
+}
+
+.editor-toolbar button:hover {
+  background: #4c8df1;
+  color: white;
+  border-color: #4c8df1;
+}
+
+.editor-toolbar .divider {
+  width: 1px;
+  background: #ddd;
+  margin: 0 6px;
+}
+
+.editor-toolbar input[type=color] {
+  width: 30px;
+  height: 30px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.editor-area {
+  width: 100%;
+  min-height: 300px;
+  padding: 14px 20px;       /* beri padding kiri supaya marker masuk ke dalam */
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  line-height: 1.7;
+  font-size: 16px;
+  background: #fff;
+  display: block;
+  box-sizing: border-box;   /* penting supaya padding dihitung di dalam */
+}
+
+.editor-area:focus {
+  outline: none;
+  border-color: #4c8df1;
+  box-shadow: 0 0 0 2px rgba(76,141,241,.2);
+}
+
+.editor-area ul,
+.editor-area ol {
+  padding-left: 20px;      /* marker di dalam text area */
+  margin: 10px 0;          /* jarak antar paragraf */
+}
+
+  </style>
+</head>
+<body>
+
+  <!-- SIDEBAR -->
+  <div class="sidebar" id="sidebar">
+    <div class="toggle-btn" id="toggle-btn"><i class="ri-menu-line"></i></div>
+    <div class="menu">
+      <a href="#" class="active" data-page="dashboard"><i class="ri-dashboard-line"></i><span>Dashboard</span></a>
+      <a href="#" data-page="users"><i class="ri-user-line"></i><span>Kelola Pengguna</span></a>
+      <a href="#" data-page="history"><i class="ri-history-line"></i><span>Histori Prediksi</span></a>
+      <a href="#" data-page="content"><i class="ri-file-text-line"></i><span>Konten</span></a>
+      <a href="#" data-page="settings"><i class="ri-settings-3-line"></i><span>Pengaturan</span></a>
+    </div>
+    <div class="user-box" id="user-box"></div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main">
+    <div class="header-box" id="header-box"><h1 id="header-title">Dashboard</h1></div>
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="card" id="systemStatCard"></div>
+      <div class="dashboard-grid">
+        <div class="card"><h2>Grafik Prediksi Per Bulan</h2><div class="chart-container"><canvas id="chartPrediksi"></canvas></div></div>
+        <div class="card"><h2>Distribusi Hasil Prediksi</h2><div class="chart-container"><canvas id="chartHasil"></canvas></div></div>
+      </div>
+    </div>
+
+    <!-- USERS -->
+    <div class="page" id="page-users"><div class="card"><h2>Daftar Pengguna</h2>
+      <table id="usersTable"><thead><tr><th>No</th><th>Nama</th><th>Email</th><th>Username</th></tr></thead><tbody></tbody></table>
+    </div></div>
+
+    <!-- HISTORY -->
+    <div class="page" id="page-history"><div class="card"><h2>Histori Prediksi User</h2>
+      <table id="historyTable"><thead><tr><th>No</th><th>Nama User</th><th>Hasil</th><th>Confidence</th><th>Tanggal</th></tr></thead><tbody></tbody></table>
+    </div></div>
+
+    <!-- CMS CONTENT -->
+    <div class="page" id="page-content">
+      <div class="card">
+        <h2>Kelola Konten</h2>
+        <div class="cms-toolbar">
+          <button class="btn-primary" id="btnNewPost">Buat Konten Baru</button>
+          <input type="text" id="searchInput" placeholder="Cari judul..." style="flex:1;padding:8px;border-radius:8px;border:1px solid #ddd">
+          <button class="btn-secondary" id="btnRefresh">Refresh</button>
+        </div>
+
+        <table id="postsTable"><thead><tr><th>No</th><th>Judul</th><th>Tanggal</th><th>Status</th><th>Aksi</th></tr></thead><tbody></tbody></table>
+
+        <!-- Editor Area (hidden until create/edit) -->
+        <div id="postEditor" class="card hidden">
+          <h3 id="editorTitle">Buat Konten Baru</h3>
+          <div style="margin-bottom:10px"><label>Judul</label><input id="postTitle" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc"></div>
+
+          <div class="editor-row">
+            <div>
+              <label>Text</label>
+            
+              <div id="toolbar" class="editor-toolbar">
+                <!-- Text style -->
+                <button type="button" onclick="format('bold')" title="Bold"><b>B</b></button>
+                <button type="button" onclick="format('italic')" title="Italic"><i>I</i></button>
+                <button type="button" onclick="format('underline')" title="Underline"><u>U</u></button>
+            
+                <span class="divider"></span>
+            
+                <!-- Alignment -->
+                <button type="button" onclick="format('justifyLeft')">Left</button>
+                <button type="button" onclick="format('justifyCenter')">Center</button>
+                <button type="button" onclick="format('justifyRight')">Right</button>
+                <button type="button" onclick="format('justifyFull')">Justify</button>
+            
+                <span class="divider"></span>
+            
+                <!-- Lists -->
+                <button type="button" onclick="format('insertUnorderedList')" title="Bullets">• List</button>
+                <button type="button" onclick="format('insertOrderedList')" title="Numbering">1. List</button>
+            
+                <span class="divider"></span>
+            
+              </div>
+            
+              <div id="postContent" 
+                   contenteditable="true"
+                   class="editor-area"
+                   style="
+                     width:100%; 
+                     padding:12px; 
+                     border-radius:10px; 
+                     border:1px solid #ddd; 
+                     min-height:300px; 
+                     line-height:1.7; 
+                     font-size:16px;
+                   ">
+              </div>
+            </div>                        
+
+            <div>
+              <!-- IMAGE UPLOAD AREA (MODERN STYLE) -->
+              <div class="image-upload-box" id="imageUploadBox">
+                <input type="file" id="postImage" accept="image/*" hidden>
+
+                <div id="imagePlaceholder" class="image-placeholder">
+                  <p>📸 Upload Gambar</p>
+                  <small>Klik atau seret gambar ke sini</small>
+                </div>
+
+                <img id="postImagePreview" class="image-preview hidden" alt="Preview">
+
+                <div class="image-actions hidden" id="imageActions">
+                  <button class="btn-secondary" id="btnChangeImage">Ganti Gambar</button>
+                  <button class="btn-danger" id="btnRemoveImage">Hapus Gambar</button>
+                </div>
+              </div>
+
+              <label style="display:block;margin-top:12px">Status</label>
+              <select id="postStatus" style="width:100%;padding:8px;border-radius:6px;border:1px solid #ccc">
+                <option value="draft">Draft</option>
+                <option value="published">Published</option>
+              </select>
+
+              <div style="margin-top:14px;display:flex;gap:8px">
+                <button class="btn-primary" id="btnSavePost">Simpan</button>
+                <button class="btn-secondary" id="btnCancelEdit">Batal</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SETTINGS -->
+    <div class="page" id="page-settings">
+      <div class="card"><h2>Pengaturan Sistem</h2>
+        <label>Warna Tema</label><input type="color" id="themeColorInput">
+        <label>API Key</label><input type="text" id="apiKeyInput">
+        <label>Versi Model</label><input type="text" id="modelVersionInput">
+        <button onclick="saveSettings()">Simpan Pengaturan</button>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+// ---------------------------
+// Util & Globals
+// ---------------------------
+const sidebar = document.getElementById('sidebar');
+const toggleBtn = document.getElementById('toggle-btn');
+const links = document.querySelectorAll('.sidebar a');
+const pages = document.querySelectorAll('.page');
+const headerTitle = document.getElementById('header-title');
+const headerBox = document.getElementById('header-box');
+const token = localStorage.getItem('token'); // assume token exists after login
+
+const headerColors = { dashboard: '#ACC4FF', users: '#dae1fb', history: '#ACC4FF', content: '#bfe9c7', settings: '#dae1fb' };
+
+toggleBtn.onclick = () => sidebar.classList.toggle('hide');
+
+links.forEach(link => {
+  link.addEventListener('click', e => {
+    e.preventDefault();
+    links.forEach(l => l.classList.remove('active'));
+    link.classList.add('active');
+    const target = link.dataset.page;
+    pages.forEach(p => p.classList.remove('active'));
+    const pageEl = document.getElementById('page-' + target);
+    if (pageEl) pageEl.classList.add('active');
+    headerTitle.textContent = link.innerText;
+    headerBox.style.background = headerColors[target] || '#ACC4FF';
+
+    // Load page-specific data
+    if (target === 'users') loadUsers();
+    if (target === 'history') loadAdminHistory();
+    if (target === 'content') loadPosts();
+  });
+});
+
+// ---------------------------
+// DASHBOARD (charts & stats)
+// ---------------------------
+async function loadSystemStats(){
+  if (!token) return;
+  try{
+    const res = await fetch('http://localhost:5000/user/count',{headers:{Authorization:`Bearer ${token}`}});
+    const data = await res.json();
+    
+    document.getElementById('systemStatCard').innerHTML = `\n      <h2>Statistik Sistem</h2>\n      <p>Total User: <b>${data.total_user}</b></p>\n      <p>Total Prediksi: <b>${data.total_prediction}+</b></p>\n      <p>Akurasi Model: <b>${data.accuracy}%</b></p>`;
+  }catch(e){console.error(e)}
+}
+loadSystemStats();
+
+function renderDefaultCharts(){
+  // simple defaults
+  new Chart(document.getElementById('chartPrediksi'),{type:'bar',data:{labels:['Belum Ada Data'],datasets:[{label:'Sakit',data:[0]},{label:'Tidak Sakit',data:[0]}]}});
+  new Chart(document.getElementById('chartHasil'),{type:'pie',data:{labels:['Tidak Sakit','Sakit'],datasets:[{data:[1,0]}]}});
+}
+renderDefaultCharts();
+
+// ---------------------------
+// USERS
+// ---------------------------
+async function loadUsers(){
+  if (!token) return;
+  try{
+    const res = await fetch('http://localhost:5000/user/all',{headers:{Authorization:`Bearer ${token}`}});
+    const users = await res.json();
+    const tbody = document.querySelector('#usersTable tbody'); tbody.innerHTML='';
+    users
+  .filter(u => u.role !== 'admin')
+  .forEach((u, i) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="text-align-last: center;">${i + 1}</td>
+      <td>${u.nama}</td>
+      <td>${u.email}</td>
+      <td>${u.username}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  }catch(e){console.error(e)}
+}
+
+document.addEventListener('click',async function(e){
+  if (e.target.classList.contains('deleteBtn')){
+    const id=e.target.dataset.id; if(!confirm('Yakin ingin menghapus user ini?')) return;
+    try{const res=await fetch(`http://localhost:5000/user/${id}`,{method:'DELETE',headers:{Authorization:`Bearer ${token}`}});const data=await res.json();if(res.ok){alert('User berhasil dihapus');loadUsers()}else alert(data.error||'Gagal');}catch(err){console.error(err);alert('Error')}
+  }
+});
+
+// ---------------------------
+// HISTORY
+// ---------------------------
+async function loadAdminHistory(){
+  if (!token) return;
+  try{
+    const res = await fetch('http://localhost:5000/history/admin/all',{headers:{Authorization:`Bearer ${token}`}});
+    const data = await res.json();
+    const tbody = document.querySelector('#historyTable tbody'); tbody.innerHTML='';
+    if(!data.length){tbody.innerHTML='<tr><td colspan="5" style="text-align:center">Belum ada data</td></tr>';return}
+    data.forEach((item,i)=>{const tr=document.createElement('tr');tr.innerHTML=`<td style="text-align-last: center;">${i+1}</td><td>${item.nama}</td><td style="text-align-last: center;">${item.result===1?"Sakit":"Tidak Sakit"}</td><td style="text-align-last: center;">${formatConfidence(item.confidence)}</td><td style="text-align-last: center;">${new Date(item.created_at).toLocaleString('id-ID')}</td>`;tbody.appendChild(tr)})
+  }catch(e){console.error(e)}
+}
+function formatConfidence(v){if(v<=1) return (v*100).toFixed(2)+'%';return v.toFixed(2)+'%'}
+
+// ---------------------------
+// SETTINGS
+// ---------------------------
+async function loadSettings(){
+  if(!token) return;
+  try{const res=await fetch('http://localhost:5000/settings',{headers:{Authorization:`Bearer ${token}`}});const data=await res.json();document.getElementById('themeColorInput').value=data.theme_color||'#ACC4FF';document.getElementById('apiKeyInput').value=data.api_key||'';document.getElementById('modelVersionInput').value=data.model_version||'v1.0'}catch(e){console.error(e)}
+}
+async function saveSettings(){
+  const token=localStorage.getItem('token');const payload={theme_color:document.getElementById('themeColorInput').value,api_key:document.getElementById('apiKeyInput').value,model_version:document.getElementById('modelVersionInput').value};
+  try{const res=await fetch('http://localhost:5000/settings',{method:'PUT',headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(payload)});const r=await res.json();alert(r.message)}catch(e){console.error(e);alert('Gagal menyimpan pengaturan')}
+}
+loadSettings();
+
+// ---------------------------
+// USER BOX + LOGOUT
+// ---------------------------
+function loadUserBox(){
+  const userBox=document.getElementById('user-box');const user=JSON.parse(localStorage.getItem('user'))||null;if(!user){userBox.innerHTML='<p style="color:white">Tidak ada user</p>';return}
+  userBox.innerHTML=`<div class="user-info"><p style="color:white;margin:0">${user.username}</p><small style="color:#ddd">Role: ${user.role}</small></div><button id="logoutBtn" class="logout-btn">Logout</button>`;
+  document.getElementById('logoutBtn').addEventListener('click',()=>{if(confirm('Yakin ingin logout?')){localStorage.removeItem('token');localStorage.removeItem('user');window.location.href='../login.html'}})
+}
+loadUserBox();
+
+// ---------------------------
+// CMS: Posts CRUD
+// ---------------------------
+const postsTable = document.querySelector('#postsTable tbody');
+const btnNewPost = document.getElementById('btnNewPost');
+const btnRefresh = document.getElementById('btnRefresh');
+const searchInput = document.getElementById('searchInput');
+const postEditor = document.getElementById('postEditor');
+const editorTitle = document.getElementById('editorTitle');
+const postTitle = document.getElementById('postTitle');
+const postContent = document.getElementById('postContent');
+const postImage = document.getElementById('postImage');
+const postImagePreview = document.getElementById('postImagePreview');
+const postStatus = document.getElementById('postStatus');
+const btnSavePost = document.getElementById('btnSavePost');
+const btnCancelEdit = document.getElementById('btnCancelEdit');
+const uploadBox = document.getElementById("imageUploadBox");
+const postImageInput = document.getElementById("postImage");
+const imgPreview = document.getElementById("postImagePreview");
+const imgPlaceholder = document.getElementById("imagePlaceholder");
+const imgActions = document.getElementById("imageActions");
+const btnChangeImage = document.getElementById("btnChangeImage");
+const btnRemoveImage = document.getElementById("btnRemoveImage");
+const content = document.getElementById("postContent").innerHTML;
+let editingPostId = null; // null => new
+let postsCache = [];
+
+async function loadPosts(){
+  if(!token) return;
+  try{
+    const res = await fetch('http://localhost:5000/cms/posts',{headers:{Authorization:`Bearer ${token}`}});
+    postsCache = await res.json();
+    renderPosts(postsCache);
+  }catch(e){console.error(e);alert('Gagal memuat konten')}
+}
+
+function renderPosts(list){
+  postsTable.innerHTML='';
+  if(!list.length){postsTable.innerHTML='<tr><td colspan="6" style="text-align:center">Belum ada konten</td></tr>';return}
+  list.forEach((p,i)=>{
+    const tr=document.createElement('tr');
+    tr.innerHTML=`<td style="text-align-last: center;">${i+1}</td><td>${p.title}</td><td style="text-align-last: center;">${new Date(p.created_at||p.updated_at||Date.now()).toLocaleDateString('id-ID')}</td><td>${p.status}</td><td style="text-align-last: center;">
+      <button class='action-btn btn-edit' data-id='${p.id}' data-action='edit'>Edit</button>
+      <button class='action-btn btn-delete' data-id='${p.id}' data-action='delete'>Hapus</button>
+    </td>`;
+    postsTable.appendChild(tr);
+  })
+}
+
+btnNewPost.addEventListener('click',()=>openEditor());
+btnRefresh.addEventListener('click',()=>loadPosts());
+searchInput.addEventListener('input',()=>{const q=searchInput.value.trim().toLowerCase();renderPosts(postsCache.filter(p=>p.title.toLowerCase().includes(q)||p.slug.toLowerCase().includes(q)))});
+
+// Open editor, if postObj provided -> edit
+function openEditor(postObj){
+  editingPostId = postObj?postObj.id:null;
+  editorTitle.textContent = postObj? 'Edit Konten' : 'Buat Konten Baru';
+  postTitle.value = postObj?postObj.title:'';
+  postContent.innerHTML = postObj ? (postObj.content || '') : '';
+  postStatus.value = postObj?postObj.status||'draft':'draft';
+  if (postObj && postObj.featured_image){postImagePreview.src = postObj.featured_image;} else postImagePreview.classList.add('hidden');
+  postEditor.classList.remove('hidden');
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+postImage.addEventListener('change', async (e)=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const base64 = await readFileAsBase64(file);
+  postImagePreview.src = base64; postImagePreview.classList.remove('hidden');
+});
+
+function readFileAsBase64(file){
+  return new Promise((res,rej)=>{const reader = new FileReader();reader.onload = ()=>res(reader.result);reader.onerror = ()=>rej('fail');reader.readAsDataURL(file)});
+}
+
+btnCancelEdit.addEventListener('click',()=>{postEditor.classList.add('hidden');editingPostId=null});
+
+btnSavePost.addEventListener('click', async ()=>{
+  const payload = {
+    title: postTitle.value.trim(),
+    content: postContent.innerHTML,
+    status: postStatus.value,
+    featured_image: postImagePreview.src || null
+  };
+
+  if(!payload.title){return alert('Masukkan judul')}
+
+  try{
+    const url = editingPostId?`http://localhost:5000/cms/posts/${editingPostId}`:'http://localhost:5000/cms/posts';
+    const method = editingPostId? 'PUT' : 'POST';
+    const res = await fetch(url,{method,headers:{'Content-Type':'application/json',Authorization:`Bearer ${token}`},body:JSON.stringify(payload)});
+    const data = await res.json();
+    if(res.ok){alert('Konten tersimpan');postEditor.classList.add('hidden');editingPostId=null;loadPosts()}else{alert(data.error||'Gagal menyimpan')}
+  }catch(e){console.error(e);alert('Terjadi kesalahan menyimpan')}
+});
+
+// delegated events for edit/delete
+postsTable.addEventListener('click',async (e)=>{
+  const btn = e.target.closest('button'); if(!btn) return;
+  const id = btn.dataset.id; const action = btn.dataset.action;
+  if(action==='edit'){ const post = postsCache.find(p=>String(p.id)===String(id)); openEditor(post); }
+  if(action==='delete'){ if(!confirm('Hapus konten ini?')) return; try{const res=await fetch(`http://localhost:5000/cms/posts/${id}`,{method:'DELETE',headers:{Authorization:`Bearer ${token}`}});const r=await res.json(); if(res.ok){alert('Terhapus');loadPosts()}else alert(r.error||'Gagal menghapus')}catch(err){console.error(err);alert('Error')} }
+});
+
+function slugify(text){return text.toString().toLowerCase().trim().replace(/\s+/g,'-').replace(/[^a-z0-9\-]/g,'').replace(/-+/g,'-')}
+
+// initial load when page first opened
+// loadPosts(); // will be triggered when clicking the menu
+
+function showImage(base64) {
+  imgPreview.src = base64;
+  imgPreview.classList.remove("hidden");
+  imgActions.classList.remove("hidden");
+  imgPlaceholder.classList.add("hidden");
+}
+
+// klik upload area
+uploadBox.addEventListener("click", () => postImageInput.click());
+
+// pilih file → tampilkan preview
+postImageInput.addEventListener("change", async e => {
+  const file = e.target.files[0];
+  if (!file) return;
+  const base64 = await readFileAsBase64(file);
+  showImage(base64);
+});
+
+// fungsi konversi base64
+function readFileAsBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader = new FileReader();
+    reader.onload = ()=>resolve(reader.result);
+    reader.onerror = ()=>reject("fail");
+    reader.readAsDataURL(file);
+  });
+}
+
+// drag & drop
+uploadBox.addEventListener("dragover", e => {
+  e.preventDefault();
+  uploadBox.classList.add("dragover");
+});
+
+uploadBox.addEventListener("dragleave", () => {
+  uploadBox.classList.remove("dragover");
+});
+
+uploadBox.addEventListener("drop", async e => {
+  e.preventDefault();
+  uploadBox.classList.remove("dragover");
+  const file = e.dataTransfer.files[0];
+  if (!file) return;
+  const base64 = await readFileAsBase64(file);
+  showImage(base64);
+});
+
+// ganti gambar
+btnChangeImage.addEventListener("click", () => postImageInput.click());
+
+// hapus gambar
+btnRemoveImage.addEventListener("click", () => {
+  imgPreview.classList.add("hidden");
+  imgActions.classList.add("hidden");
+  imgPlaceholder.classList.remove("hidden");
+  postImageInput.value = "";
+  imgPreview.src = "";
+});
+
+function format(command) {
+  document.execCommand(command, false, null);
+}
+
+document.getElementById("postContent").addEventListener("keypress", function(e) {
+  if (e.key === "Enter") {
+    // ganti default behavior
+    e.preventDefault();
+    document.execCommand("insertHTML", false, "<p><br></p>");
+  }
+});
+
+
+</script>
+
+</body>
+</html>

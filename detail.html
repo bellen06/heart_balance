@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Detail Tips</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body{
+      margin:0; 
+      font-family:'Poppins',sans-serif; 
+      background:#eef3ff;
+      overflow-x:hidden;
+    }
+
+      /* HEADER */
+      .custom-header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      padding: 18px 30px;
+      gap: 20px;
+      background: #fff;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+
+    .header-icon {
+      position: relative;
+      width: 60px;
+      height: 60px;
+      animation: float 3s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+      100% { transform: translateY(0); }
+    }
+
+    .circle {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 6px 18px rgba(76, 141, 241, .4);
+    }
+
+    .heart-icon {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 60px;
+      transform: translate(-50%, -50%);
+    }
+
+    .header-text h1 {
+      font-size: 22px;
+      margin: 0;
+      font-weight: 700;
+      color: #123066;
+    }
+
+    .header-text p {
+      margin: 0;
+      font-size: 15px;
+      color: #555;
+      margin-top: 2px;
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 8px 12px;
+      border: 1px solid rgba(0,0,0,.06);
+      cursor: pointer;
+      font-weight: 600;
+      color: #123066;
+      transition: .25s;
+      font-size: 14px;
+    }
+    .back-btn:hover {
+      transform: translateY(-2px) scale(1.03);
+      box-shadow: 0 10px 22px rgba(0,0,0,.12);
+    }
+
+
+    /* CONTAINER */
+    .container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      animation: fade .6s ease;
+    }
+
+    @keyframes fade {
+      from { opacity:0; transform:translateY(20px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* BACK BUTTON */
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px 16px;
+      border: 1px solid rgba(0,0,0,.06);
+      box-shadow: 0 6px 14px rgba(0,0,0,.08);
+      cursor: pointer;
+      transition: .25s;
+      font-weight: 600;
+      color: #123066;
+      animation: slideLeft .6s ease;
+    }
+
+    @keyframes slideLeft {
+      from { opacity: 0; transform: translateX(-20px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .back-btn:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 12px 22px rgba(0,0,0,.12);
+    }
+
+    /* IMAGE */
+    .hero-img {
+      width: 100%;
+      height: 260px;
+      object-fit: cover;
+      border-radius: 16px;
+      box-shadow: 0 12px 26px rgba(0,0,0,.12);
+      margin-top: 20px;
+    }
+
+    h1 { font-size: 30px; margin-top: 30px; color:#123066; }
+    p { font-size: 16px; line-height:1.65; color:#333; }
+  </style>
+</head>
+
+<body>
+
+  <header class="custom-header">
+    <button class="back-btn" onclick="history.back()">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" 
+      stroke="currentColor" stroke-width="2" stroke-linecap="round" 
+      stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"></path>
+      </svg>
+    </button>
+  
+    <div class="header-icon">
+      <div class="circle"></div>
+      <img src="assets/logo_balance.png" alt="Heart Icon" class="heart-icon">
+    </div>
+    <div class="header-text">
+      <h1>Tips & Trik</h1>
+      <p>Memulai Jantung Sehat</p>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <img src="https://picsum.photos/800/400" class="hero-img" alt="gambar detail" id="detail-img">
+
+    <h1 id="title">Memuat...</h1>
+    <p id="desc">Harap tunggu...</p>
+
+  </div>
+
+<script>
+  async function loadDetail() {
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    if (!id) {
+      document.getElementById("title").textContent = "ID tidak ditemukan";
+      document.getElementById("desc").textContent = "";
+      return;
+    }
+
+    try {
+      const res = await fetch(`http://localhost:5000/cms/posts/${id}`);
+
+      if (!res.ok) {
+        document.getElementById("title").textContent = "Konten tidak ditemukan";
+        document.getElementById("desc").textContent = "Data tidak tersedia.";
+        return;
+      }
+
+      const data = await res.json();
+
+      document.getElementById("title").textContent = data.title || "Tanpa Judul";
+      document.getElementById("desc").innerHTML =
+        (data.content || "")
+          .replace(/\n{2,}/g, "</p><p>")      // enter 2x menjadi paragraf
+          .replace(/\n/g, "<br>")            // enter 1x menjadi baris baru
+          .replace(/^/, "<p>")               // mulai paragraf
+          .concat("</p>");
+
+
+      document.getElementById("detail-img").src =
+        data.featured_image ||
+        data.image ||
+        "https://picsum.photos/800/400";
+
+    } catch (err) {
+      console.error("Gagal mengambil detail:", err);
+      document.getElementById("title").textContent = "Terjadi kesalahan";
+      document.getElementById("desc").textContent = "Tidak dapat memuat konten.";
+    }
+  }
+
+  loadDetail();
+</script>
+
+</body>
+</html>
