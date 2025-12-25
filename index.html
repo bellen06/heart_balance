@@ -598,7 +598,45 @@ html {
 }
 }
 
+#mobile-account {
+  position: relative;
+}
 
+.mobile-account-dropdown {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  width: 160px;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+  display: none;
+  flex-direction: column;
+  overflow: hidden;
+  z-index: 1000;
+}
+
+.mobile-account-dropdown.show {
+  display: flex;
+}
+
+.dropdown-item {
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.dropdown-item:hover {
+  background: #f5f7ff;
+}
+
+.dropdown-item.logout {
+  color: #f44336;
+  font-weight: 600;
+}
   </style>
 </head>
 <body>
@@ -632,7 +670,7 @@ html {
 
 </div>
 
-<nav class="mobile-navbar">
+<nav class="mobile-navbar"> 
   <a data-page="home" class="active"><i class="ri-home-5-fill"></i></a>
   <a data-page="about"><i class="ri-information-fill"></i></a>
   <a data-page="heart"><i class="ri-heart-pulse-fill"></i></a>
@@ -641,6 +679,16 @@ html {
   <!-- AKUN -->
   <a id="mobile-account">
     <i class="ri-login-box-line"></i>
+
+    <!-- DROPDOWN -->
+    <div class="mobile-account-dropdown" id="mobile-account-dropdown">
+      <div class="dropdown-item" id="mobile-history">
+        <i class="ri-history-line"></i> History
+      </div>
+      <div class="dropdown-item logout" id="mobile-logout">
+        <i class="ri-logout-box-line"></i> Logout
+      </div>
+    </div>
   </a>
 </nav>
 
@@ -737,13 +785,16 @@ html {
   const sidebarFooter = document.getElementById('sidebar-footer');
   const mobileNavLinks = document.querySelectorAll(".mobile-navbar a");
   const mobileAccount = document.getElementById("mobile-account");
+  const mobileDropdown = document.getElementById("mobile-account-dropdown");
+  const mobileHistory = document.getElementById("mobile-history");
+  const mobileLogout = document.getElementById("mobile-logout");
   const API_URL = "http://localhost:5000";
 
   async function checkUser() {
     const token = localStorage.getItem("token");
     const sidebarHistory = document.getElementById("sidebar-history");
 
-    // ================== BELUM LOGIN ==================
+    // ===== BELUM LOGIN =====
     if (!token) {
       sidebarFooter.innerHTML = `
         <a href="login.html" class="footer-btn">Login</a>
@@ -751,54 +802,59 @@ html {
       `;
       sidebarHistory.style.display = "none";
 
-      // Mobile navbar akun (belum login)
-      if (mobileAccount) {
-        mobileAccount.innerHTML = `<i class="ri-login-box-line"></i>`;
-        mobileAccount.onclick = () => {
-          window.location.href = "login.html";
-        };
-      }
+      mobileAccount.innerHTML = `<i class="ri-login-box-line"></i>`;
+      mobileAccount.onclick = () => {
+        window.location.href = "login.html";
+      };
       return;
     }
 
-    // ================== SUDAH LOGIN ==================
-    try {
-      const res = await fetch(`${API_URL}/user/getme`, {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
+    // ===== SUDAH LOGIN =====
+    const res = await fetch(`${API_URL}/user/getme`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    const data = await res.json();
 
-      const data = await res.json();
+    if (data.username) {
+      sidebarFooter.innerHTML = `
+        <div class="user-info">👋 Halo, ${data.username}</div>
+        <button onclick="logout()" class="logout-btn">Logout</button>
+      `;
 
-      if (data.username) {
-        sidebarFooter.innerHTML = `
-          <div class="user-info">👋 Halo, ${data.username}</div>
-          <button onclick="logout()" class="logout-btn">Logout</button>
-        `;
+      // icon user
+      mobileAccount.querySelector("i").className = "ri-user-3-fill";
 
-        // Mobile navbar akun (sudah login)
-        if (mobileAccount) {
-          mobileAccount.innerHTML = `<i class="ri-user-3-fill"></i>`;
-          mobileAccount.onclick = () => {
-            window.location.href = "profile.html";
-          };
-        }
-      } else {
-        // fallback jika token invalid
-        localStorage.removeItem("token");
-        checkUser();
-      }
-    } catch (error) {
-      console.error("Gagal cek user:", error);
+      // toggle dropdown
+      mobileAccount.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        mobileDropdown.classList.toggle("show");
+      };
+
+      // history
+      mobileHistory.onclick = () => {
+        window.location.href = "history_mobile.html";
+      };
+
+      // logout
+      mobileLogout.onclick = () => {
+        logout();
+        mobileDropdown.classList.remove("show");
+      };
     }
   }
 
   function logout() {
     localStorage.removeItem("token");
     alert("Berhasil logout!");
-    checkUser();
+    location.reload();
   }
 
-  // Panggil saat halaman load
+  // klik di luar → dropdown menutup
+  document.addEventListener("click", () => {
+    mobileDropdown?.classList.remove("show");
+  });
+
   checkUser();
 
   // ===================== 🩷 FUNGSI WARNA TEMA =====================
