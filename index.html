@@ -176,7 +176,7 @@
       top: 0;
       margin: 0 0 0 33%;
       width: 100%;
-      height: 350px;
+      height: min(45vh, 360px);
       background-color: #ACC4FF;
       z-index: 1;
       transform: translateX(100%);
@@ -281,10 +281,13 @@
     }
 
     .hero-content {
+      position: relative;
       z-index: 2;
-      color: white;
-      text-align: center;
-      max-width: 600px;
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 100%;
+      padding-bottom: 40px;
     }
 
     .hero h1 {
@@ -384,8 +387,8 @@
       }
 
       .hero-container {
-        width: 95%;
-        height: 300px;
+        width: min(95%, 1100px);
+        height: min(60vh, 450px);
       }
     }
 
@@ -416,6 +419,183 @@
   object-fit: cover;
   border-radius: 14px;
   box-shadow: 0 4px 10px rgba(0,0,0,0.18);
+}
+
+.mobile-navbar {
+  display: none;
+}
+
+/* ================== MOBILE ================== */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .mobile-navbar {
+    display: flex;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 65px;
+    background: white;
+    box-shadow: 0 -5px 20px rgba(0,0,0,0.08);
+    justify-content: space-around;
+    align-items: center;
+    z-index: 999;
+  }
+
+  .mobile-navbar a {
+    font-size: 1.6rem;
+    color: #999;
+  }
+
+  .mobile-navbar a.active {
+    color: #ff8e8e;
+    transform: translateY(-6px);
+  }
+
+  .main {
+    padding-bottom: 90px;
+  }
+}
+
+html {
+  font-size: clamp(14px, 1.1vw, 16px);
+}
+
+.hero h1 {
+  font-size: clamp(1.6rem, 3vw, 2.5rem);
+}
+
+.hero p {
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
+}
+
+@media (max-width: 480px) {
+  .hero-container {
+    height: 250px;
+  }
+
+  footer {
+    margin-left: 0;
+    text-align: center;
+  }
+
+  .head {
+    height: auto;
+    padding: 70px 16px 24px;
+    margin: 0;
+    transform: none;
+  }
+  
+  .logo {
+    position: relative;
+    width: 120px;
+    height: 70px;
+    border-radius: 12px;
+    margin: 0 auto 12px;
+  }
+
+  .logo img {
+    width: 85px;
+    height: auto;
+  }
+
+  
+  .head h1 {
+    font-size: 1.25rem;
+  }
+
+  .logo {
+    width: 100px;
+    height: 60px;
+  }
+
+  .logo img {
+    width: 70px;
+  }
+
+  .hero-container {
+    margin-top: 40px;
+  }
+}
+
+
+/* =============================
+   MOBILE MODE: SLIDE LEFT → RIGHT
+   HEADER & HERO ONLY
+   ============================= */
+   @media (max-width: 768px) {
+
+/* === HEADER === */
+.head {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  margin: 0;
+  height: auto;
+  padding: 80px 16px 24px;
+
+  /* posisi awal: di kiri */
+  transform: translateX(-100%);
+  opacity: 0;
+
+  transition: transform 0.45s ease, opacity 0.35s ease;
+}
+
+.head.active {
+  transform: translateX(0); /* geser ke posisi */
+  opacity: 1;
+  margin-top: -60px;
+}
+
+/* isi header rapi */
+.header {
+  flex-direction: column;
+  text-align: center;
+  gap: 10px;
+}
+
+.head h1 {
+  margin: 0;
+  font-size: clamp(1.2rem, 4.5vw, 1.6rem);
+  line-height: 1.3;
+}
+
+/* logo */
+.logo {
+  position: relative;
+  width: 110px;
+  height: 70px;
+  margin: 0 auto 10px;
+  border-radius: 12px;
+}
+
+.logo img {
+  width: 80px;
+  height: auto;
+}
+
+/* === HERO === */
+.hero {
+  transform: translateX(-100%);
+  opacity: 0;
+  transition: transform 0.45s ease, opacity 0.35s ease;
+}
+
+.hero.active {
+  transform: translateX(0);
+  opacity: 1;
+}
+}
+
+/* HP KECIL */
+@media (max-width: 480px) {
+.head h1 {
+  font-size: 1.25rem;
+}
 }
 
 
@@ -451,6 +631,18 @@
   </div>
 
 </div>
+
+<nav class="mobile-navbar">
+  <a data-page="home" class="active"><i class="ri-home-5-fill"></i></a>
+  <a data-page="about"><i class="ri-information-fill"></i></a>
+  <a data-page="heart"><i class="ri-heart-pulse-fill"></i></a>
+  <a data-page="tips"><i class="ri-lightbulb-fill"></i></a>
+
+  <!-- AKUN -->
+  <a id="mobile-account">
+    <i class="ri-login-box-line"></i>
+  </a>
+</nav>
 
   <!-- MAIN -->
   <div class="main" id="main">
@@ -503,7 +695,7 @@
         <img src="assets/banner_kedua.jpg" alt="lab">
         <div class="hero-content">
           <a href="about.html">
-            <button style="margin-left: -600%; margin-top: 270%;">About Us</button>
+            <button>About Us</button>
           </a>
         </div>
       </div>
@@ -543,35 +735,60 @@
   const heads = document.querySelectorAll('.head');
   const body = document.body;
   const sidebarFooter = document.getElementById('sidebar-footer');
+  const mobileNavLinks = document.querySelectorAll(".mobile-navbar a");
+  const mobileAccount = document.getElementById("mobile-account");
   const API_URL = "http://localhost:5000";
 
   async function checkUser() {
     const token = localStorage.getItem("token");
     const sidebarHistory = document.getElementById("sidebar-history");
+
+    // ================== BELUM LOGIN ==================
     if (!token) {
       sidebarFooter.innerHTML = `
         <a href="login.html" class="footer-btn">Login</a>
         <a href="register.html" class="footer-btn">Register</a>
       `;
       sidebarHistory.style.display = "none";
+
+      // Mobile navbar akun (belum login)
+      if (mobileAccount) {
+        mobileAccount.innerHTML = `<i class="ri-login-box-line"></i>`;
+        mobileAccount.onclick = () => {
+          window.location.href = "login.html";
+        };
+      }
       return;
     }
 
-    const res = await fetch(`${API_URL}/user/getme`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    // ================== SUDAH LOGIN ==================
+    try {
+      const res = await fetch(`${API_URL}/user/getme`, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
 
-    const data = await res.json();
-    if (data.username) {
-      sidebarFooter.innerHTML = `
-        <div class="user-info">👋 Halo, ${data.username}</div>
-        <button onclick="logout()" class="logout-btn">Logout</button>
-      `;
-    } else {
-      sidebarFooter.innerHTML = `
-        <a href="login.html" class="footer-btn">Login</a>
-        <a href="register.html" class="footer-btn">Register</a>
-      `;
+      const data = await res.json();
+
+      if (data.username) {
+        sidebarFooter.innerHTML = `
+          <div class="user-info">👋 Halo, ${data.username}</div>
+          <button onclick="logout()" class="logout-btn">Logout</button>
+        `;
+
+        // Mobile navbar akun (sudah login)
+        if (mobileAccount) {
+          mobileAccount.innerHTML = `<i class="ri-user-3-fill"></i>`;
+          mobileAccount.onclick = () => {
+            window.location.href = "profile.html";
+          };
+        }
+      } else {
+        // fallback jika token invalid
+        localStorage.removeItem("token");
+        checkUser();
+      }
+    } catch (error) {
+      console.error("Gagal cek user:", error);
     }
   }
 
@@ -581,6 +798,7 @@
     checkUser();
   }
 
+  // Panggil saat halaman load
   checkUser();
 
   // ===================== 🩷 FUNGSI WARNA TEMA =====================
@@ -649,6 +867,24 @@
   });
 });
 
+mobileNavLinks.forEach(mobileLink => {
+  mobileLink.addEventListener('click', e => {
+    e.preventDefault();
+
+    const target = mobileLink.dataset.page;
+
+    // aktifkan tampilan navbar HP
+    mobileNavLinks.forEach(l => l.classList.remove('active'));
+    mobileLink.classList.add('active');
+
+    // 🔥 PENTING: trigger sidebar link asli
+    links.forEach(link => {
+      if (link.dataset.page === target) {
+        link.click(); // PAKAI LOGIC ASLI
+      }
+    });
+  });
+});
 
 async function loadPredictionHistory() {
   const token = localStorage.getItem("token");
